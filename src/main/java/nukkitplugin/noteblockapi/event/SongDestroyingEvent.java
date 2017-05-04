@@ -14,16 +14,12 @@ public class SongDestroyingEvent extends Event implements Cancellable {
 		this.song = song;
 	}
 
-	public static HandlerList getHandlerList() {
+	public static HandlerList getHandlers() {
 		return handlers;
 	}
 
 	public SongPlayer getSongPlayer() {
 		return song;
-	}
-
-	public HandlerList getHandlers() {
-		return handlers;
 	}
 
 	@Override

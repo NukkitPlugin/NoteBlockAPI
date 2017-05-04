@@ -12,15 +12,11 @@ public class SongStoppedEvent extends Event {
 		this.song = song;
 	}
 
-	public static HandlerList getHandlerList() {
+	public static HandlerList getHandlers() {
 		return handlers;
 	}
 
 	public SongPlayer getSongPlayer() {
 		return song;
-	}
-
-	public HandlerList getHandlers() {
-		return handlers;
 	}
 }

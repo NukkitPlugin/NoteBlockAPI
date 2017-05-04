@@ -93,8 +93,7 @@ public abstract class SongPlayer {
 						if (tick > song.getLength()) {
 							playing = false;
 							tick = -1;
-							SongEndEvent event = new SongEndEvent(SongPlayer.this);
-							Server.getInstance().getPluginManager().callEvent(event);
+							Server.getInstance().getPluginManager().callEvent(new SongEndEvent(SongPlayer.this));
 							if (autoDestroy) {
 								destroy();
 								return;
@@ -171,10 +170,8 @@ public abstract class SongPlayer {
 
 	public void setPlaying(boolean playing) {
 		this.playing = playing;
-		if (!playing) {
-			SongStoppedEvent event = new SongStoppedEvent(this);
-			Server.getInstance().getPluginManager().callEvent(event);
-		}
+		if (!playing)
+			Server.getInstance().getPluginManager().callEvent(new SongStoppedEvent(this));
 	}
 
 	public short getTick() {

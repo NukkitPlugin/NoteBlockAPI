@@ -44,18 +44,15 @@ public class NBSDecoder {
 			short tick = -1;
 			while (true) {
 				short jumpTicks = readShort(dis); // jumps till next tick
-				// System.out.println("Jumps to next tick: " + jumpTicks);
 				if (jumpTicks == 0)
 					break;
 				tick += jumpTicks;
-				// System.out.println("Tick: " + tick);
 				short layer = -1;
 				while (true) {
 					short jumpLayers = readShort(dis); // jumps till next layer
 					if (jumpLayers == 0)
 						break;
 					layer += jumpLayers;
-					// System.out.println("Layer: " + layer);
 					setNote(layer, tick, dis.readByte() /* instrument */, dis.readByte() /* note */, layerHashMap);
 				}
 			}
@@ -75,13 +72,13 @@ public class NBSDecoder {
 		return null;
 	}
 
-	private static void setNote(int layer, int ticks, byte instrument, byte key, HashMap<Integer, Layer> layerHashMap) {
-		Layer oldLayer = layerHashMap.get(layer);
-		if (oldLayer == null) {
-			oldLayer = new Layer();
-			layerHashMap.put(layer, oldLayer);
+	private static void setNote(int newLayer, int ticks, byte instrument, byte key, HashMap<Integer, Layer> layerHashMap) {
+		Layer layer = layerHashMap.get(newLayer);
+		if (layer == null) {
+			layer = new Layer();
+			layerHashMap.put(newLayer, layer);
 		}
-		oldLayer.setNote(ticks, new Note(instrument, key));
+		layer.setNote(ticks, new Note(instrument, key));
 	}
 
 	private static short readShort(DataInputStream dis) throws IOException {
