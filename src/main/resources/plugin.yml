@@ -1,7 +1,6 @@
 name: NoteBlockAPI
-
-main: com.xxmicloxx.NoteBlockAPI.NoteBlockPlayerMain
-version: 1.2.0
-
-description: a developer interface to play nbs-files ingame
-authors: [xxmicloxx, michidk]
+author: DeBe
+version: 1.0.0
+main: nukkitplugin.noteblockapi.NoteBlockAPI
+api: 1.0.0
+load: STARTUP
