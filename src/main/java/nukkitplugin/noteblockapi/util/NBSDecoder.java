@@ -3,6 +3,7 @@ package nukkitplugin.noteblockapi.util;
 import java.io.*;
 import java.util.HashMap;
 
+import nukkitplugin.noteblockapi.element.Instrument;
 import nukkitplugin.noteblockapi.element.Layer;
 import nukkitplugin.noteblockapi.element.Note;
 import nukkitplugin.noteblockapi.element.Song;
@@ -78,7 +79,7 @@ public class NBSDecoder {
 			layer = new Layer();
 			layerHashMap.put(newLayer, layer);
 		}
-		layer.setNote(ticks, new Note(instrument, key));
+		layer.setNote(ticks, new Note(Instrument.getInstrument(instrument), key));
 	}
 
 	private static short readShort(DataInputStream dis) throws IOException {
