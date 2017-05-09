@@ -1,6 +1,7 @@
 # NoteBlockAPI
 This plugin forked from [**xxmicloxx/NoteBlockAPI**](https://github.com/xxmicloxx/NoteBlockAPI)
-
+#### **Test video on Youtube**
+[![NoteBlockAPI Test (with ServerSongTest)](https://i.ytimg.com/vi/wuO2IVG4Hb0/hqdefault.jpg)](https://www.youtube.com/watch?v=wuO2IVG4Hb0 "NoteBlockAPI Test (with ServerSongTest)")
 
 
 ## How to use in maven (pom.xml)
