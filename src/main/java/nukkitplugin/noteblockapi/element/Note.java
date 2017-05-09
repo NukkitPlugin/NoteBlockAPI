@@ -9,6 +9,14 @@ public class Note {
 	private byte	instrument;
 	private byte	key;
 
+	public void playSound(Position pos) {
+		pos.getLevel().addSound(new NoteBoxSound(pos, instrument, key - 33));
+	}
+
+	public void playSound(Player player, Vector3 vec) {
+		player.getLevel().addSound(new NoteBoxSound(vec, instrument, key - 33), player);
+	}
+
 	public Note(byte instrument, byte key) {
 		this.instrument = instrument;
 		this.key = key;
@@ -28,15 +36,5 @@ public class Note {
 
 	public void setKey(byte key) {
 		this.key = key;
-	}
-
-	public void playSound(Position pos) {
-		NoteBoxSound sound = new NoteBoxSound(pos, instrument, key - 33);
-		pos.getLevel().addSound(sound);
-	}
-
-	public void playSound(Player player, Vector3 vec) {
-		NoteBoxSound sound = new NoteBoxSound(vec, instrument, key - 33);
-		player.getLevel().addSound(sound, player);
 	}
 }

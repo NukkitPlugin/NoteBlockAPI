@@ -15,14 +15,6 @@ public class Layer {
 		this.hashMap = hashMap;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public Note getNote(int tick) {
 		return hashMap.get(tick);
 	}
@@ -37,5 +29,13 @@ public class Layer {
 
 	public void setVolume(byte volume) {
 		this.volume = volume;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

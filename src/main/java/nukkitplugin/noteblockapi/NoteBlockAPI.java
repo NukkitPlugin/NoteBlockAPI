@@ -17,16 +17,12 @@ public class NoteBlockAPI extends PluginBase {
 	}
 
 	public static boolean isReceivingSong(Player player) {
-		return !(instance.playingSongs.get(player.getName()) == null || instance.playingSongs.get(player.getName()).isEmpty());
+		return instance.playingSongs.get(player.getName()) != null && !instance.playingSongs.get(player.getName()).isEmpty();
 	}
 
 	public static void stopPlaying(Player player) {
 		if (instance.playingSongs.get(player.getName()) != null)
 			instance.playingSongs.get(player.getName()).stream().forEach(songPlayer -> songPlayer.removePlayer(player));
-	}
-
-	public static void setPlayerVolume(Player player, byte volume) {
-		instance.playerVolume.put(player.getName(), volume);
 	}
 
 	public static byte getPlayerVolume(Player player) {
@@ -36,6 +32,10 @@ public class NoteBlockAPI extends PluginBase {
 			instance.playerVolume.put(player.getName(), volume);
 		}
 		return volume;
+	}
+
+	public static void setPlayerVolume(Player player, byte volume) {
+		instance.playerVolume.put(player.getName(), volume);
 	}
 
 	@Override

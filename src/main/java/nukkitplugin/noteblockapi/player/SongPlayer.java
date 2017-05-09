@@ -7,12 +7,11 @@ import java.util.List;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import nukkitplugin.noteblockapi.NoteBlockAPI;
-import nukkitplugin.noteblockapi.element.FadeType;
 import nukkitplugin.noteblockapi.element.Song;
 import nukkitplugin.noteblockapi.event.SongDestroyingEvent;
 import nukkitplugin.noteblockapi.event.SongEndEvent;
 import nukkitplugin.noteblockapi.event.SongStoppedEvent;
-import nukkitplugin.noteblockapi.util.Interpolator;
+import static nukkitplugin.noteblockapi.util.Interpolator.interpLinear;
 
 public abstract class SongPlayer {
 	protected Song				song;
@@ -27,59 +26,18 @@ public abstract class SongPlayer {
 	protected byte				fadeStart		= volume;
 	protected int				fadeDuration	= 60;
 	protected int				fadeDone		= 0;
-	protected FadeType			fadeType		= FadeType.FADE_LINEAR;
 
 	public SongPlayer(Song song) {
 		this.song = song;
 		createThread();
 	}
 
-	public FadeType getFadeType() {
-		return fadeType;
-	}
-
-	public void setFadeType(FadeType fadeType) {
-		this.fadeType = fadeType;
-	}
-
-	public byte getFadeTarget() {
-		return fadeTarget;
-	}
-
-	public void setFadeTarget(byte fadeTarget) {
-		this.fadeTarget = fadeTarget;
-	}
-
-	public byte getFadeStart() {
-		return fadeStart;
-	}
-
-	public void setFadeStart(byte fadeStart) {
-		this.fadeStart = fadeStart;
-	}
-
-	public int getFadeDuration() {
-		return fadeDuration;
-	}
-
-	public void setFadeDuration(int fadeDuration) {
-		this.fadeDuration = fadeDuration;
-	}
-
-	public int getFadeDone() {
-		return fadeDone;
-	}
-
-	public void setFadeDone(int fadeDone) {
-		this.fadeDone = fadeDone;
-	}
-
 	protected void calculateFade() {
-		if (fadeDone == fadeDuration)
-			return;
-		double targetVolume = Interpolator.interpLinear(new double[] { 0, fadeStart, fadeDuration, fadeTarget }, fadeDone);
-		setVolume((byte) targetVolume);
-		fadeDone++;
+		if (fadeDone != fadeDuration) {
+			double targetVolume = interpLinear(new double[] { 0, fadeStart, fadeDuration, fadeTarget }, fadeDone);
+			setVolume((byte) targetVolume);
+			fadeDone++;
+		}
 	}
 
 	protected void createThread() {
@@ -111,14 +69,35 @@ public abstract class SongPlayer {
 				if (duration < delayMillis)
 					try {
 						Thread.sleep((long) (delayMillis - duration));
-					} catch (InterruptedException e) {
-						// do nothing
-					}
+					} catch (InterruptedException e) {}
 			}
 		});
 		playerThread.setPriority(Thread.MAX_PRIORITY);
 		playerThread.start();
 	}
+
+	public Song getSong() {
+		return song;
+	}
+
+	public boolean isPlaying() {
+		return playing;
+	}
+
+	public void setPlaying(boolean playing) {
+		if (!(this.playing = playing))
+			Server.getInstance().getPluginManager().callEvent(new SongStoppedEvent(this));
+	}
+
+	public short getTick() {
+		return tick;
+	}
+
+	public void setTick(short tick) {
+		this.tick = tick;
+	}
+
+	public abstract void playTick(Player p, int tick);
 
 	public List<String> getPlayerList() {
 		return Collections.unmodifiableList(playerList);
@@ -137,6 +116,22 @@ public abstract class SongPlayer {
 		}
 	}
 
+	public void removePlayer(Player player) {
+		synchronized (this) {
+			playerList.remove(player.getName());
+			if (NoteBlockAPI.getInstance().playingSongs.get(player.getName()) != null) {
+				ArrayList<SongPlayer> songs = new ArrayList<SongPlayer>(NoteBlockAPI.getInstance().playingSongs.get(player.getName()));
+				songs.remove(this);
+				NoteBlockAPI.getInstance().playingSongs.put(player.getName(), songs);
+				if (playerList.isEmpty() && autoDestroy) {
+					SongEndEvent event = new SongEndEvent(this);
+					Server.getInstance().getPluginManager().callEvent(event);
+					destroy();
+				}
+			}
+		}
+	}
+
 	public boolean getAutoDestroy() {
 		synchronized (this) {
 			return autoDestroy;
@@ -149,7 +144,45 @@ public abstract class SongPlayer {
 		}
 	}
 
-	public abstract void playTick(Player p, int tick);
+	public byte getFadeTarget() {
+		return fadeTarget;
+	}
+
+	public void setFadeTarget(byte fadeTarget) {
+		this.fadeTarget = fadeTarget;
+	}
+
+	public byte getVolume() {
+		return volume;
+	}
+
+	public void setVolume(byte volume) {
+		this.volume = volume;
+	}
+
+	public byte getFadeStart() {
+		return fadeStart;
+	}
+
+	public void setFadeStart(byte fadeStart) {
+		this.fadeStart = fadeStart;
+	}
+
+	public int getFadeDuration() {
+		return fadeDuration;
+	}
+
+	public void setFadeDuration(int fadeDuration) {
+		this.fadeDuration = fadeDuration;
+	}
+
+	public int getFadeDone() {
+		return fadeDone;
+	}
+
+	public void setFadeDone(int fadeDone) {
+		this.fadeDone = fadeDone;
+	}
 
 	public void destroy() {
 		synchronized (this) {
@@ -162,51 +195,5 @@ public abstract class SongPlayer {
 			playing = false;
 			setTick((short) -1);
 		}
-	}
-
-	public boolean isPlaying() {
-		return playing;
-	}
-
-	public void setPlaying(boolean playing) {
-		this.playing = playing;
-		if (!playing)
-			Server.getInstance().getPluginManager().callEvent(new SongStoppedEvent(this));
-	}
-
-	public short getTick() {
-		return tick;
-	}
-
-	public void setTick(short tick) {
-		this.tick = tick;
-	}
-
-	public void removePlayer(Player player) {
-		synchronized (this) {
-			playerList.remove(player.getName());
-			if (NoteBlockAPI.getInstance().playingSongs.get(player.getName()) == null)
-				return;
-			ArrayList<SongPlayer> songs = new ArrayList<SongPlayer>(NoteBlockAPI.getInstance().playingSongs.get(player.getName()));
-			songs.remove(this);
-			NoteBlockAPI.getInstance().playingSongs.put(player.getName(), songs);
-			if (playerList.isEmpty() && autoDestroy) {
-				SongEndEvent event = new SongEndEvent(this);
-				Server.getInstance().getPluginManager().callEvent(event);
-				destroy();
-			}
-		}
-	}
-
-	public byte getVolume() {
-		return volume;
-	}
-
-	public void setVolume(byte volume) {
-		this.volume = volume;
-	}
-
-	public Song getSong() {
-		return song;
 	}
 }

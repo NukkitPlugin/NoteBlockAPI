@@ -15,15 +15,15 @@ public class Song {
 	private float					delay;
 
 	public Song(Song other) {
-		this.speed = other.getSpeed();
+		speed = other.getSpeed();
 		delay = 20 / speed;
-		this.layerHashMap = other.getLayerHashMap();
-		this.songHeight = other.getSongHeight();
-		this.length = other.getLength();
-		this.title = other.getTitle();
-		this.author = other.getAuthor();
-		this.description = other.getDescription();
-		this.path = other.getPath();
+		layerHashMap = other.getLayerHashMap();
+		songHeight = other.getSongHeight();
+		length = other.getLength();
+		title = other.getTitle();
+		author = other.getAuthor();
+		description = other.getDescription();
+		path = other.getPath();
 	}
 
 	public Song(float speed, HashMap<Integer, Layer> layerHashMap, short songHeight, final short length, String title, String author, String description, File path) {
