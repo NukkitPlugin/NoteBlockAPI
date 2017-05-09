@@ -1,5 +1,5 @@
 # NoteBlockAPI
-This plugin porked from [**xxmicloxx/NoteBlockAPI**](https://github.com/xxmicloxx/NoteBlockAPI)
+This plugin forked from [**xxmicloxx/NoteBlockAPI**](https://github.com/xxmicloxx/NoteBlockAPI)
 
 
 
